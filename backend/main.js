@@ -1,6 +1,11 @@
 const express = require("express");
+require("dotenv").config();
+
+const { createDbConnection } = require("./db/db");
 
 const app = express();
+
+createDbConnection();
 
 app.get("", (req, res) => {
   res.send("Home Page!");
@@ -15,6 +20,6 @@ app.get("/signup", (req, res) => {
   res.send("Sign Up Page!");
 });
 
-app.listen(8000, () => {
+app.listen(process.env.PORT, () => {
   console.log("Server is running on PORT: ", 8000);
 });
