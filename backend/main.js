@@ -79,8 +79,49 @@ app.post("/register", async (req, res) => {
   res.status(200).json({ status: true, userInfo, token });
 });
 
-app.get("/login", (req, res) => {
-  res.send("Sign Up Page!");
+app.post("/login", async (req, res) => {
+  // 1. Get all the required data
+  const { email, password } = req.body;
+
+  // 2. Check data
+  if (!email) {
+    res.status(400).json({ status: false, messge: "Email is required!" });
+  }
+
+  if (!password) {
+    res.status(400).json({ status: false, messge: "Password is required!" });
+  }
+
+  // 3. Check if user is present or not
+  const isUser = await User.findOne({ email });
+  console.log(isUser);
+  if (!isUser) {
+    res.status(400).json({
+      status: false,
+      messge: "User is not registered, Try to Register first!",
+    });
+  }
+
+  // 4. Verify the password
+  const isPasswordCorrect = await bcrypt.compare(password, isUser.password);
+  if (!isPasswordCorrect) {
+    res.status(400).json({
+      status: false,
+      messge: "Incorrect Password, Try Again with correct one!",
+    });
+  }
+
+  // 5. generate token
+  const token = jwt.sign({ email }, process.env.JWT_KEY, { expiresIn: "1h" });
+
+  // 6. Send the response for that along with cookies
+  res
+    .status(200)
+    .cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+    })
+    .json({ status: true, messge: "Login Successfully!" });
 });
 
 app.listen(process.env.PORT, () => {
