@@ -1,6 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const cors = require("cors");
 
 require("dotenv").config();
 
@@ -8,6 +9,14 @@ const { createDbConnection } = require("./db/db");
 const User = require("./model/User");
 
 const app = express();
+
+// cors
+app.use(
+  cors({
+    origin: "http://localhost:5173", // frontend origin
+    credentials: true, // if using cookies or auth headers
+  })
+);
 
 // middlewares
 app.use(express.json()); // For JSON data
@@ -26,19 +35,19 @@ app.post("/register", async (req, res) => {
 
   //2. Check that all data is passed
   if (!firstName) {
-    res.send("First name is required!");
+    res.status(400).send("First name is required!");
   }
 
   if (!lastName) {
-    res.send("Last name is required!");
+    res.status(400).send("Last name is required!");
   }
 
   if (!email) {
-    res.send("Email is required!");
+    res.status(400).send("Email is required!");
   }
 
   if (!password) {
-    res.send("Password is required!");
+    res.status(400).send("Password is required!");
   }
 
   //3. Check if the user is already present in the DB
@@ -76,10 +85,11 @@ app.post("/register", async (req, res) => {
   };
 
   //7. Send User
-  res.status(200).json({ status: true, userInfo, token });
+  res.status(201).json({ status: true, userInfo, token });
 });
 
 app.post("/login", async (req, res) => {
+
   // 1. Get all the required data
   const { email, password } = req.body;
 

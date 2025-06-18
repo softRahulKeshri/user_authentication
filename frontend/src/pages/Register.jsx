@@ -15,10 +15,31 @@ const RegisterForm = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Registration data:", formData);
     // Handle registration logic here
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}register`,
+        {
+          method: "POST", // Specify the request method
+          headers: {
+            "Content-Type": "application/json", // Set the content type to JSON
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+      if (response.status === 201) {
+        alert("Success!");
+      }
+      if (response.status !== 201) {
+        alert("Something wrong!");
+      }
+    } catch (err) {
+      console.log(err);
+      alert("Somehing went wrong!");
+    }
   };
 
   return (
