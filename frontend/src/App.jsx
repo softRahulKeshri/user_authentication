@@ -1,5 +1,7 @@
+import Main from "./pages/Main";
+
 const App = () => {
-  return <h1> Hello, FE</h1>;
+  return <Main />;
 };
 
 export default App;
